@@ -1,0 +1,99 @@
+import java.awt.EventQueue;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import java.awt.BorderLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+public class SearchStudent extends JInternalFrame {
+	private JTextField textField;
+	private JTable table;
+	private Connection cn;
+
+	void fill()
+	{
+		try
+		{
+			String query="select * from students";
+			cn=MyData.getConnection();
+			PreparedStatement st=cn.prepareStatement(query);
+			ResultSet rs=st.executeQuery();
+			DefaultTableModel dt=new DefaultTableModel();
+			dt.addColumn("Ad_no");
+			dt.addColumn("Password");
+			dt.addColumn("Name");
+			dt.addColumn("Marks");			
+			while(rs.next())
+			{
+				String row[]= {rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4)};
+				dt.addRow(row);
+			}
+			table.setModel(dt);
+			cn.close();
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+	}
+	void fill(String n)
+	{
+		try
+		{
+			String query="select * from students where ad_no like '"+n+"%' or name like '"+n+"%' ";
+			cn=MyData.getConnection();
+			PreparedStatement st=cn.prepareStatement(query);
+			ResultSet rs=st.executeQuery();
+			DefaultTableModel dt=new DefaultTableModel();
+			dt.addColumn("Ad_no");
+			dt.addColumn("Password");
+			dt.addColumn("Name");
+			dt.addColumn("Marks");			
+			while(rs.next())
+			{
+				String row[]= {rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4)};
+				dt.addRow(row);
+			}
+			table.setModel(dt);
+			cn.close();
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+	}
+	public SearchStudent() {
+		setBounds(0, 0, 856, 683);
+		setClosable(true);
+		setMaximizable(true);
+		setIconifiable(true);
+		
+		textField = new JTextField();
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				fill(textField.getText());
+			}
+		});
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		getContentPane().add(textField, BorderLayout.NORTH);
+		textField.setColumns(10);	
+		
+		table = new JTable();
+		JScrollPane scrollPane = new JScrollPane(table);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		fill();
+	}
+
+}
