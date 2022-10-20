@@ -1,0 +1,14 @@
+import java.awt.EventQueue;
+
+import javax.swing.JInternalFrame;
+
+public class SearchQuestion extends JInternalFrame {
+
+	public SearchQuestion() {
+		setBounds(0, 0, 856, 683);
+		setClosable(true);
+		setMaximizable(true);
+		setIconifiable(true);
+	}
+
+}
