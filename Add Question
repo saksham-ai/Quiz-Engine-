@@ -1,0 +1,96 @@
+import java.awt.EventQueue;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.Font;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.awt.event.ActionEvent;
+
+public class AddQuestion extends JInternalFrame {
+	private JTextField txtQuestion;
+	private JTextField txtOp1;
+	private JTextField txtOp2;
+	private JTextField txtOp3;
+	private JTextField txtOp4;
+	private JTextField txtCA;
+
+	public AddQuestion() {
+		setBounds(0, 0, 856, 683);
+		setClosable(true);
+		setMaximizable(true);
+		setIconifiable(true);
+		getContentPane().setLayout(null);
+		
+		txtQuestion = new JTextField();
+		txtQuestion.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtQuestion.setBounds(167, 66, 561, 57);
+		getContentPane().add(txtQuestion);
+		txtQuestion.setColumns(10);
+		
+		txtOp1 = new JTextField();
+		txtOp1.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtOp1.setColumns(10);
+		txtOp1.setBounds(167, 160, 561, 57);
+		getContentPane().add(txtOp1);
+		
+		txtOp2 = new JTextField();
+		txtOp2.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtOp2.setColumns(10);
+		txtOp2.setBounds(167, 252, 561, 57);
+		getContentPane().add(txtOp2);
+		
+		txtOp3 = new JTextField();
+		txtOp3.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtOp3.setColumns(10);
+		txtOp3.setBounds(167, 340, 561, 57);
+		getContentPane().add(txtOp3);
+		
+		txtOp4 = new JTextField();
+		txtOp4.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtOp4.setColumns(10);
+		txtOp4.setBounds(167, 427, 561, 57);
+		getContentPane().add(txtOp4);
+		
+		txtCA = new JTextField();
+		txtCA.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtCA.setColumns(10);
+		txtCA.setBounds(167, 506, 561, 57);
+		getContentPane().add(txtCA);
+		
+		JButton btnNewButton = new JButton("Save");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				try
+				{
+					Connection cn=MyData.getConnection();
+					String query="insert into questions(question,op1,op2,op3,op4,ca) values(?,?,?,?,?,?)";
+					PreparedStatement st=cn.prepareStatement(query);
+					st.setString(1,txtQuestion.getText());
+					st.setString(2,txtOp1.getText());
+					st.setString(3,txtOp2.getText());
+					st.setString(4,txtOp3.getText());
+					st.setString(5,txtOp4.getText());
+					st.setString(6,txtCA.getText());					
+					st.executeUpdate();
+					cn.close();
+					JOptionPane.showMessageDialog(null, "Data Saved");
+				}
+				catch(Exception ex)
+				{
+					JOptionPane.showMessageDialog(null, ex.getMessage());
+				}
+			
+			
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnNewButton.setBounds(425, 591, 89, 23);
+		getContentPane().add(btnNewButton);
+	}
+
+}
