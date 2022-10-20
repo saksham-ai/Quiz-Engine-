@@ -1,0 +1,145 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import javax.swing.JTextField;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.awt.event.ActionEvent;
+
+public class Login extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JComboBox comboBox;
+	private JButton btnNewButton;
+static String ad_no;
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login frame = new Login();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Login() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 625, 427);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Enter ID");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel.setBounds(214, 58, 184, 26);
+		contentPane.add(lblNewLabel);
+		
+		textField = new JTextField();
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		textField.setBounds(214, 109, 228, 36);
+		contentPane.add(textField);
+		textField.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblPassword.setBounds(214, 170, 184, 26);
+		contentPane.add(lblPassword);
+		
+		textField_1 = new JTextField();
+		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		textField_1.setColumns(10);
+		textField_1.setBounds(214, 221, 228, 36);
+		contentPane.add(textField_1);
+		
+		comboBox = new JComboBox();
+		comboBox.setBounds(217, 286, 228, 36);
+		DefaultComboBoxModel dcm=new DefaultComboBoxModel();
+		dcm.addElement("Administrator");
+		dcm.addElement("Student");
+		comboBox.setModel(dcm);
+		
+		contentPane.add(comboBox);
+		
+		btnNewButton = new JButton("Login");
+		btnNewButton.addActionListener(new ActionListener() {
+			private Connection cn;
+
+			public void actionPerformed(ActionEvent e) {
+				String category=comboBox.getSelectedItem().toString();
+				String userid= textField.getText();
+				String password=textField_1.getText();
+				
+				if(category.equals("Administrator") && userid.equals("admin") && password.equals("admin"))
+				{
+					Home h=new Home();
+					h.setVisible(true);
+				}
+				else
+				{
+					try
+					{
+						String query="select * from students where ad_no=? and password=? and marks is null";
+						cn=MyData.getConnection();
+						PreparedStatement st=cn.prepareStatement(query);
+						st.setString(1,userid);
+						st.setString(2, password);
+						ResultSet rs=st.executeQuery();
+						if(rs.next())
+						{
+							ad_no=userid;
+							Login.this.dispose();
+							StudentHome sh=new StudentHome();
+							sh.setVisible(true);
+						}
+							
+						else
+						{
+							JOptionPane.showMessageDialog(null,"Invalid");
+						}
+					}
+					catch(Exception ex)
+					{
+						
+					}
+					finally {
+						try {
+							cn.close();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnNewButton.setBounds(279, 356, 89, 23);
+		contentPane.add(btnNewButton);
+	}
+}
