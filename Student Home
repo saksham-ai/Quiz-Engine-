@@ -1,0 +1,158 @@
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class StudentHome extends JFrame {
+
+	private JPanel contentPane;
+	private JRadioButton rdbtnNewRadioButton_3;
+	private JRadioButton rdbtnNewRadioButton_2;
+	private JRadioButton rdbtnNewRadioButton_1;
+	private JRadioButton rdbtnNewRadioButton;
+
+	ArrayList<Question> questions=new ArrayList<Question>();
+	private Connection cn;
+	int index;
+	private JLabel lblNewLabel;
+	private Question q;
+	int score;
+	void fillQuestions()
+	{
+		try
+		{
+			String query="select * from questions";
+			cn=MyData.getConnection();
+			PreparedStatement st=cn.prepareStatement(query);
+			ResultSet rs=st.executeQuery();
+			while(rs.next())
+			{
+				Question q=new Question(rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7));
+				questions.add(q);
+			}
+			cn.close();
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
+	}
+	
+	public StudentHome() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 826, 562);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		lblNewLabel = new JLabel("New label");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewLabel.setBounds(71, 34, 664, 118);
+		contentPane.add(lblNewLabel);
+		
+		rdbtnNewRadioButton = new JRadioButton("New radio button");
+		rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		rdbtnNewRadioButton.setBounds(81, 159, 626, 31);
+		contentPane.add(rdbtnNewRadioButton);
+		
+		rdbtnNewRadioButton_1 = new JRadioButton("New radio button");
+		rdbtnNewRadioButton_1.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		rdbtnNewRadioButton_1.setBounds(81, 222, 626, 31);
+		contentPane.add(rdbtnNewRadioButton_1);
+		
+		rdbtnNewRadioButton_2 = new JRadioButton("New radio button");
+		rdbtnNewRadioButton_2.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		rdbtnNewRadioButton_2.setBounds(81, 290, 626, 31);
+		contentPane.add(rdbtnNewRadioButton_2);
+		
+		rdbtnNewRadioButton_3 = new JRadioButton("New radio button");
+		rdbtnNewRadioButton_3.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		rdbtnNewRadioButton_3.setBounds(81, 351, 626, 31);
+		contentPane.add(rdbtnNewRadioButton_3);
+		
+		ButtonGroup gp=new ButtonGroup();
+		gp.add(rdbtnNewRadioButton);
+		gp.add(rdbtnNewRadioButton_1);
+		gp.add(rdbtnNewRadioButton_2);
+		gp.add(rdbtnNewRadioButton_3);
+		
+		
+		JButton btnNewButton = new JButton("Next");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if(rdbtnNewRadioButton.isSelected() && q.getOp1().equals(q.getCa()))
+					score++;
+				else if(rdbtnNewRadioButton_1.isSelected() && q.getOp2().equals(q.getCa()))
+					score++;
+				else if(rdbtnNewRadioButton_2.isSelected() && q.getOp3().equals(q.getCa()))
+					score++;
+				else if(rdbtnNewRadioButton_3.isSelected() && q.getOp4().equals(q.getCa()))
+					score++;
+				
+				
+				index++;
+				if(index<questions.size())
+				{
+					q=questions.get(index);
+					lblNewLabel.setText(q.getQuestion());
+					rdbtnNewRadioButton.setText(q.getOp1());
+					rdbtnNewRadioButton_1.setText(q.getOp2());
+					rdbtnNewRadioButton_2.setText(q.getOp3());
+					rdbtnNewRadioButton_3.setText(q.getOp4());
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(null,"Your score is"+score);
+					try
+					{						
+						Connection cn=MyData.getConnection();
+						String query="update students set marks=? where ad_no=?";
+						PreparedStatement st=cn.prepareStatement(query);
+						st.setInt(1,score);
+						st.setString(2,Login.ad_no);
+						st.executeUpdate();
+						cn.close();
+				
+					}
+					catch(Exception ex1)
+					{
+						
+					}
+					StudentHome.this.dispose();
+				}
+				
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		btnNewButton.setBounds(81, 445, 89, 23);
+		contentPane.add(btnNewButton);
+		fillQuestions();
+		q=questions.get(index);
+		lblNewLabel.setText(q.getQuestion());
+		rdbtnNewRadioButton.setText(q.getOp1());
+		rdbtnNewRadioButton_1.setText(q.getOp2());
+		rdbtnNewRadioButton_2.setText(q.getOp3());
+		rdbtnNewRadioButton_3.setText(q.getOp4());
+		
+	}
+}
